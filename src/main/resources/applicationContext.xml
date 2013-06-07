@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util.xsd ">
+
+	<util:properties id="configProperties" location="classpath:config.properties"></util:properties>
+
+	<context:property-placeholder location="classpath:config.properties" />
+
+
+	<!-- 数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="${driver}" />
+		<property name="url" value="${url}" />
+		<property name="username" value="${user}" />
+		<property name="password" value="${password}" />
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+	</bean>
+
+	<bean id="dbService" class="com.sunyard.task.audit.AuditDBServiceImpl">
+		<property name="charsetName" value="${charsetName}" />
+		<property name="bufflen" value="${bufflen}" ></property>
+		<property name="jdbcTemplate">
+			<ref bean="jdbcTemplate" />
+		</property>
+	</bean>
+
+	<bean id="taskService" class="com.sunyard.task.audit.AuditTaskService">
+		<property name="threadSize" value="${threadSize}">
+		</property>
+		<property name="dbService">
+			<ref bean="dbService" />
+		</property>
+	</bean>
+
+	<bean id="dayJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="taskService" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>1</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="weekJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="taskService" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>2</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="tenDayJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="taskService" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>3</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="monthJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="taskService" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>4</value>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<bean id="quarterJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="taskService" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>5</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="halfYearJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="taskService" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>6</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="yearJob"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="taskService" />
+		</property>
+		<property name="targetMethod">
+			<value>execute</value>
+		</property>
+		<property name="arguments">
+			<list>
+				<value>7</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+					<property name="jobDetail">
+						<ref bean="dayJob" />
+					</property>
+					<property name="cronExpression">
+						<!-- 每天 -->
+						<value>0 0 0 * * ?</value>
+					</property>
+				</bean>
+				
+				<bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+					<property name="jobDetail">
+						<ref bean="weekJob" />
+					</property>
+					<property name="cronExpression">
+						<!-- 每星期最后一天 -->
+						<value>0 0 0 ? * 7</value>
+					</property>
+				</bean>	
+				
+				<bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+					<property name="jobDetail">
+						<ref bean="tenDayJob" />
+					</property>
+					<property name="cronExpression">
+						<!-- 每隔10天执行一次 -->
+						<value>0 0 0 10,20 * ?</value>
+					</property>
+				</bean>
+				
+				<bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+					<property name="jobDetail">
+						<ref bean="monthJob" />
+					</property>
+					<property name="cronExpression">
+						<!-- 每月最后一天 -->
+						<value>0 0 0 L * ?</value>
+					</property>
+				</bean>
+				
+				<bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+					<property name="jobDetail">
+						<ref bean="quarterJob" />
+					</property>
+					<property name="cronExpression">
+						<!-- 四,六,九,十二月最后一天 -->
+						<value>0 0 0 L 3,6,9,12 ?</value>
+					</property>
+				</bean>
+				
+				<bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+					<property name="jobDetail">
+						<ref bean="halfYearJob" />
+					</property>
+					<property name="cronExpression">
+						<!-- 六月最后一天 -->
+						<value>0 0 0 L 6 ?</value>
+					</property>
+				</bean>
+
+				<bean class="org.springframework.scheduling.quartz.CronTriggerBean">
+					<property name="jobDetail">
+						<ref bean="yearJob" />
+					</property>
+					<property name="cronExpression">
+						<!-- 十二月最后一天 -->
+						<value>0 0 0 L 12 ?</value>
+					</property>
+				</bean>	
+				
+			</list>
+		</property>
+	</bean>
+
+</beans>

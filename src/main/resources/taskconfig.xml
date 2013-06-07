@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobDefinition>
+	<taskDefinitions>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB1</taskId>
+			<taskDesc>任务1</taskDesc>
+			<status>-1</status>			
+			<beforeCommand>
+				<commandDef type="system">
+					<props>
+						<prop key="charsetName">GBK</prop>
+						<prop key="command">ping 127.0.0.1</prop>
+					</props>
+				</commandDef>
+			</beforeCommand>			
+			<command>
+				<commandDef type="sql">
+					<props>
+						<prop key="sql">select * from fun</prop>
+						<prop key="jdbcTemplate">bean:jdbcTemplate</prop>
+					</props>
+				</commandDef>
+			</command>			
+			<afterSuccess>
+				<commandDef type="set">
+					<props>
+						<prop key="mode">break</prop>
+						<prop key="commonds">
+							<commandDef type="sql">
+								<props>
+									<prop key="sql">select * from fun</prop>
+									<prop key="jdbcTemplate">bean:jdbcTemplate</prop>
+								</props>
+							</commandDef>
+							<commandDef type="sql">
+								<props>
+									<prop key="sql">select * from fun1</prop>
+									<prop key="jdbcTemplate">bean:jdbcTemplate</prop>
+								</props>
+							</commandDef>
+							<commandDef type="sql">
+								<props>
+									<prop key="sql">select * from fun2</prop>
+									<prop key="jdbcTemplate">bean:jdbcTemplate</prop>
+								</props>
+							</commandDef>
+						</prop>
+					</props>
+				</commandDef>
+			</afterSuccess>			
+			<afterError>
+			</afterError>
+			<finalCommand>
+			</finalCommand>
+		</taskDefinition>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB2</taskId>
+			<taskDesc>任务2</taskDesc>
+			<beforeCommand></beforeCommand>
+			<command></command>
+		</taskDefinition>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB3</taskId>
+			<taskDesc>任务3</taskDesc>
+			<beforeCommand></beforeCommand>
+			<command></command>
+		</taskDefinition>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB4</taskId>
+			<taskDesc>任务4</taskDesc>
+			<beforeCommand></beforeCommand>
+			<command></command>
+		</taskDefinition>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB5</taskId>
+			<taskDesc>任务5</taskDesc>
+			<beforeCommand></beforeCommand>
+			<command></command>
+		</taskDefinition>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB6</taskId>
+			<taskDesc>任务6</taskDesc>
+			<beforeCommand></beforeCommand>
+			<command></command>
+			<afterSucess></afterSucess>
+			<afterError></afterError>
+			<finalCommand></finalCommand>
+		</taskDefinition>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB7</taskId>
+			<taskDesc>任务7</taskDesc>
+			<beforeCommand></beforeCommand>
+			<command></command>
+		</taskDefinition>
+		<taskDefinition>
+			<taskId>ODS_TESTTAB8</taskId>
+			<taskDesc>任务8</taskDesc>
+			<beforeCommand></beforeCommand>
+			<command></command>
+			<afterSucess></afterSucess>
+			<afterError></afterError>
+			<finalCommand></finalCommand>
+		</taskDefinition>
+	</taskDefinitions>
+	<taskRelationships>
+		<taskRelationship>
+			<taskId>ODS_TESTTAB5</taskId>
+			<relationalExpr>ODS_TESTTAB2</relationalExpr>
+		</taskRelationship>
+		<taskRelationship>
+			<taskId>ODS_TESTTAB6</taskId>
+			<relationalExpr><![CDATA[ODS_TESTTAB2&&ODS_TESTTAB5]]></relationalExpr>
+		</taskRelationship>
+		<taskRelationship>
+			<taskId>ODS_TESTTAB7</taskId>
+			<relationalExpr>ODS_TESTTAB1</relationalExpr>
+		</taskRelationship>
+		<taskRelationship>
+			<taskId>ODS_TESTTAB8</taskId>
+			<relationalExpr><![CDATA[ODS_TESTTAB1&&ODS_TESTTAB7]]></relationalExpr>
+		</taskRelationship>
+	</taskRelationships>
+</jobDefinition>
