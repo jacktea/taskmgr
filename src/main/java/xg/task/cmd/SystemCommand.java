@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.FutureTask;
 
-import xg.task.thread.StreamGobbler1;
+import xg.task.thread.StreamGobbler;
 
 
 public class SystemCommand implements Command {
@@ -41,16 +41,15 @@ public class SystemCommand implements Command {
 		try {
 
 			Thread.sleep(500);
-			// 加锁获取当前信息
 
 			log.debug("startExec \"{}\" ",commond);
 
 			Process proc = Runtime.getRuntime().exec(commond);
 
 			FutureTask<String> detailTask = new FutureTask<String>(
-					new StreamGobbler1(proc.getInputStream(), charset, bufflen));
+					new StreamGobbler(proc.getInputStream(), charset, bufflen));
 			FutureTask<String> errorTask = new FutureTask<String>(
-					new StreamGobbler1(proc.getErrorStream(), charset, bufflen));
+					new StreamGobbler(proc.getErrorStream(), charset, bufflen));
 			new Thread(detailTask).start();
 			new Thread(errorTask).start();
 			int ret = proc.waitFor();

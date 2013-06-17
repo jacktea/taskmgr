@@ -5,33 +5,30 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StreamGobbler extends Thread {
+public class StreamGobbler implements Callable<String> {
 	
 	final Logger log = LoggerFactory.getLogger("dbTask");
 	
 	final Logger errorlog = LoggerFactory.getLogger("dbTask-error");
 	
 	InputStream is;
-	String type;
 	Charset charset;
-	Map<String,String> map;
 	int maxlen;
 
-	public StreamGobbler(InputStream is,Charset charset,String type,int maxlen,Map<String,String> map) {
+	public StreamGobbler(InputStream is,Charset charset,int maxlen) {
 		this.is = is;
-		this.type = type;
 		this.charset = charset;
-		this.map = map;
 		this.maxlen = maxlen;
 	}
 
-	public void run() {
-		map.put(type, parseInputStreamToString(is, charset));
+	@Override
+	public String call() throws Exception {
+		return parseInputStreamToString(is, charset);
 	}
 	
 	private String parseInputStreamToString(InputStream in,Charset charset){
