@@ -2,9 +2,8 @@ package xg.task.cmd;
 
 import java.nio.charset.Charset;
 import java.util.Map;
-import java.util.concurrent.FutureTask;
 
-import xg.task.thread.StreamGobbler;
+import xg.task.thread.StreamCoder;
 
 
 public class SystemCommand implements Command {
@@ -46,15 +45,22 @@ public class SystemCommand implements Command {
 
 			Process proc = Runtime.getRuntime().exec(commond);
 
-			FutureTask<String> detailTask = new FutureTask<String>(
+			/*FutureTask<String> detailTask = new FutureTask<String>(
 					new StreamGobbler(proc.getInputStream(), charset, bufflen));
 			FutureTask<String> errorTask = new FutureTask<String>(
 					new StreamGobbler(proc.getErrorStream(), charset, bufflen));
 			new Thread(detailTask).start();
-			new Thread(errorTask).start();
+			new Thread(errorTask).start();*/
+			
+			StreamCoder detailCoder = new StreamCoder(proc.getInputStream(), charset, bufflen);
+			StreamCoder errorTCoder = new StreamCoder(proc.getErrorStream(), charset, bufflen);
+			detailCoder.start();
+			errorTCoder.start();
+			
 			int ret = proc.waitFor();
-			String detail = detailTask.get();
-			String error = errorTask.get();
+			
+			String detail = detailCoder.get();
+			String error = errorTCoder.get();
 
 			detail = null == detail ? "" : detail;
 			error = null == error ? "" : error;

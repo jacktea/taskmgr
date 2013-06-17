@@ -12,9 +12,9 @@ import org.slf4j.LoggerFactory;
 
 public class StreamGobbler implements Callable<String> {
 	
-	final Logger log = LoggerFactory.getLogger("dbTask");
+	final Logger log = LoggerFactory.getLogger("task");
 	
-	final Logger errorlog = LoggerFactory.getLogger("dbTask-error");
+	final Logger errorlog = LoggerFactory.getLogger("task-error");
 	
 	InputStream is;
 	Charset charset;
