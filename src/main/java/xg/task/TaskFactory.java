@@ -82,7 +82,8 @@ public class TaskFactory {
 						process.offer(task);
 						task = null;
 					} else if(task.isReady()){
-						return task;
+						prepare.offer(task);
+						//return task;
 						//process.offer(task);
 						//task.updateStatus(TaskStatus.processing,"任务:"+task.desc()+" 进入执行队列");				
 					} else{
