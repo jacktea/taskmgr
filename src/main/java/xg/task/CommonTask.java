@@ -113,16 +113,19 @@ public class CommonTask extends ExecutionTask {
 	public void execute() {
 		
 		//更改状态为开始执行
-		updateStatus(TaskStatus.processing, "任务:"+desc()+" 开始执行");		
+		synchronized (this) {
+			if(isProcessing()){
+				return;
+			}else{
+				startTime = new Date();
+				updateStatus(TaskStatus.processing, "任务:"+desc()+" 开始执行");		
+			}			
+		}
 		
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e1) {
 			errorlog.error("thread sleep Interrupted",e1);
-		}
-		
-		synchronized (this) {
-			startTime = new Date();
 		}
 		
 		TaskProcessStatus procStatus = new TaskProcessStatus(TaskStatus.processing,"");
@@ -135,7 +138,7 @@ public class CommonTask extends ExecutionTask {
 		
 		if(null==procStatus){
 			
-			procStatus = new TaskProcessStatus(TaskStatus.error,desc()+"doExecute方法未返回执行结果状态");
+			procStatus = new TaskProcessStatus(TaskStatus.error,desc()+".doExecute方法未返回执行结果状态");
 		
 		}
 		
